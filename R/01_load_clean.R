@@ -14,7 +14,7 @@ cand <- c(
   file.path(bronze_dir, "Coffe_sales.xlsx")
 )
 path_in <- cand[file.exists(cand)][1]
-if (is.na(path_in)) stop("❌ Coloque o arquivo em data/01_bronze_layer/ (coffee_sales.csv ou Coffe_sales.csv)")
+if (is.na(path_in)) stop("Coloque o arquivo em data/01_bronze_layer/ (coffee_sales.csv ou Coffe_sales.csv)")
 
 # Leitura
 if (grepl("\\.csv$", path_in, ignore.case = TRUE)) {
