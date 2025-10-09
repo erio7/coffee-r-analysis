@@ -1,6 +1,6 @@
 # ☕ Coffee Sales Analysis – R Pipeline
 
-> Projeto de análise de vendas de café com **R**, estruturado em camadas de dados (**Bronze → Silver → Gold**) e com geração automática de relatórios e gráficos.
+> Projeto de análise de vendas de café com **R**, estruturado em camadas de dados (**Bronze - Silver - Gold**) e com geração automática de relatórios e gráficos.
 
 ---
 
@@ -15,10 +15,10 @@ coffee-r-analysis/
 │   └── 03_gold_layer/     # Dados agregados e KPIs
 │
 ├── R/                     # Scripts principais (pipeline)
-│   ├── 01_load_clean.R        # BRONZE → SILVER
-│   ├── 02_analysis.R          # SILVER → GOLD
-│   ├── 03_visualization.R     # GOLD → Gráficos
-│   └── 04_report.R            # GOLD → Relatório HTML
+│   ├── 01_load_clean.R        # BRONZE - SILVER
+│   ├── 02_analysis.R          # SILVER - GOLD
+│   ├── 03_visualization.R     # GOLD - Gráficos
+│   └── 04_report.R            # GOLD - Relatório HTML
 │
 ├── reports/               # Gráficos e relatório final
 │   ├── monthly_sales.png
@@ -81,10 +81,10 @@ Este projeto tem como objetivo demonstrar um pipeline analítico completo em **R
 Rode os scripts no terminal R do VS Code, na ordem:
 
 ```r
-source("R/01_load_clean.R")     # BRONZE → SILVER
-source("R/02_analysis.R")       # SILVER → GOLD
-source("R/03_visualization.R")  # GOLD → PNG
-source("R/04_report.R")         # GOLD → HTML
+source("R/01_load_clean.R")     # BRONZE - SILVER
+source("R/02_analysis.R")       # SILVER - GOLD
+source("R/03_visualization.R")  # GOLD - PNG
+source("R/04_report.R")         # GOLD - HTML
 ```
 
 Após a execução, abra o relatório final:
