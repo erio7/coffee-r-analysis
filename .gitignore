@@ -1,0 +1,11 @@
+# R / RStudio
+.Rhistory
+.Rproj.user
+.RData
+.Ruserdata
+
+# Dados sensíveis ou grandes
+data/1_raw/
+data/3_output/
+reports/*.html
+reports/*.png
