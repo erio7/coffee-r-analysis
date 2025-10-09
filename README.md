@@ -6,29 +6,28 @@
 
 ## 📁 Estrutura de Pastas
 
+```
 coffee-r-analysis/
 │
 ├── data/
-│ ├── 01_bronze_layer/ # Dados brutos (entrada)
-│ ├── 02_silver_layer/ # Dados limpos e padronizados
-│ └── 03_gold_layer/ # Dados agregados e KPIs
+│   ├── 01_bronze_layer/   # Dados brutos (entrada)
+│   ├── 02_silver_layer/   # Dados limpos e padronizados
+│   └── 03_gold_layer/     # Dados agregados e KPIs
 │
-├── R/ # Scripts principais (pipeline)
-│ ├── 01_load_clean.R # BRONZE → SILVER
-│ ├── 02_analysis.R # SILVER → GOLD
-│ ├── 03_visualization.R # GOLD → Gráficos
-│ └── 04_report.R # GOLD → Relatório HTML
+├── R/                     # Scripts principais (pipeline)
+│   ├── 01_load_clean.R        # BRONZE → SILVER
+│   ├── 02_analysis.R          # SILVER → GOLD
+│   ├── 03_visualization.R     # GOLD → Gráficos
+│   └── 04_report.R            # GOLD → Relatório HTML
 │
-├── reports/ # Gráficos e relatório final
-│ ├── monthly_sales.png
-│ └── coffee_sales_report.html
+├── reports/               # Gráficos e relatório final
+│   ├── monthly_sales.png
+│   └── coffee_sales_report.html
 │
 ├── .gitignore
 ├── README.md
-└── requirements.txt # Pacotes R utilizados
-
-markdown
-Copiar código
+└── requirements.txt        # Pacotes R utilizados
+```
 
 ---
 
@@ -68,69 +67,81 @@ Este projeto tem como objetivo demonstrar um pipeline analítico completo em **R
      "tidyverse", "lubridate", "janitor", "readr", "readxl",
      "ggplot2", "scales", "dplyr"
    ))
-Colocar o arquivo bruto (Coffe_sales.csv ou coffee_sales.csv) em:
+   ```
 
-kotlin
-Copiar código
-data/01_bronze_layer/
-▶️ Execução do Pipeline
+4. **Colocar o arquivo bruto** (`Coffe_sales.csv` ou `coffee_sales.csv`) em:  
+   ```
+   data/01_bronze_layer/
+   ```
+
+---
+
+## ▶️ Execução do Pipeline
+
 Rode os scripts no terminal R do VS Code, na ordem:
 
-r
-Copiar código
+```r
 source("R/01_load_clean.R")     # BRONZE → SILVER
 source("R/02_analysis.R")       # SILVER → GOLD
 source("R/03_visualization.R")  # GOLD → PNG
 source("R/04_report.R")         # GOLD → HTML
+```
+
 Após a execução, abra o relatório final:
 
-bash
-Copiar código
+```
 reports/coffee_sales_report.html
-📊 KPIs Gerados
-Indicador	Descrição
-Receita total	Soma de revenue no período.
-Transações (tx)	Quantidade de registros (vendas).
-Ticket médio	Receita / número de transações.
-Top 5 produtos	Produtos com maior receita total.
-Receita por forma de pagamento	Receita agregada por cash_type.
-Receita mensal	Evolução da receita ao longo do tempo.
+```
 
-📈 Visualizações
-O script R/03_visualization.R gera automaticamente o gráfico “Evolução Mensal da Receita”, salvo em:
+---
 
-bash
-Copiar código
+## 📊 KPIs Gerados
+
+| Indicador | Descrição |
+|------------|------------|
+| **Receita total** | Soma de `revenue` no período. |
+| **Transações (tx)** | Quantidade de registros (vendas). |
+| **Ticket médio** | Receita / número de transações. |
+| **Top 5 produtos** | Produtos com maior receita total. |
+| **Receita por forma de pagamento** | Receita agregada por `cash_type`. |
+| **Receita mensal** | Evolução da receita ao longo do tempo. |
+
+---
+
+## 📈 Visualizações
+
+O script `R/03_visualization.R` gera automaticamente o gráfico **“Evolução Mensal da Receita”**, salvo em:
+
+```
 reports/monthly_sales.png
+```
+
 Esse gráfico também é incorporado no relatório HTML final, junto com as tabelas:
 
-Receita mensal (tabela)
+- Receita mensal (tabela)  
+- Top 5 produtos por receita  
+- Receita por forma de pagamento  
 
-Top 5 produtos por receita
+---
 
-Receita por forma de pagamento
+## 🧠 Notas Técnicas
 
-🧠 Notas Técnicas
-Cada linha no dataset representa 1 transação, com qty = 1.
+- Cada linha no dataset representa **1 transação**, com `qty = 1`.  
+- A variável **`tx`** no relatório indica o **número de transações** por mês.  
+- O pipeline segue o padrão **Medallion Architecture**:
+  - **Bronze:** dados crus (como vieram da origem)
+  - **Silver:** dados limpos e padronizados
+  - **Gold:** dados prontos para análise e visualização
+- O relatório final (`04_report.R`) é gerado **sem dependência do Pandoc**, compatível com execução direta no VS Code.
 
-A variável tx no relatório indica o número de transações por mês.
+---
 
-O pipeline segue o padrão Medallion Architecture:
+## 🧹 Versionamento e .gitignore
 
-Bronze: dados crus (como vieram da origem)
-
-Silver: dados limpos e padronizados
-
-Gold: dados prontos para análise e visualização
-
-O relatório final (04_report.R) é gerado sem dependência do Pandoc, compatível com execução direta no VS Code.
-
-🧹 Versionamento e .gitignore
-O repositório mantém apenas scripts e metadados versionados.
+O repositório mantém apenas scripts e metadados versionados.  
 Arquivos de dados e relatórios são ignorados por padrão:
 
-kotlin
-Copiar código
+```
 data/01_bronze_layer/
 data/03_gold_layer/
 reports/*.html
@@ -139,3 +150,11 @@ reports/*.png
 .Rproj.user
 .RData
 .Ruserdata
+```
+
+---
+
+## 📄 Licença
+
+Uso interno e educacional.  
+© 2025 Coffee Sales Analysis — Desenvolvido em R por Eric D.
