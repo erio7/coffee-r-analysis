@@ -54,4 +54,4 @@ df <- df |>
 dir.create("data/02_silver_layer", showWarnings = FALSE, recursive = TRUE)
 write_csv(df, "data/02_silver_layer/coffee_sales_clean.csv")
 
-message("✅ SILVER salvo em data/02_silver_layer/coffee_sales_clean.csv")
+message("SILVER salvo em data/02_silver_layer/coffee_sales_clean.csv")
