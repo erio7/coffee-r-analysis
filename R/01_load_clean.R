@@ -8,10 +8,7 @@ library(lubridate)
 # Caminhos
 bronze_dir <- "data/01_bronze_layer"
 cand <- c(
-  file.path(bronze_dir, "coffee_sales.csv"),
-  file.path(bronze_dir, "coffee_sales.xlsx"),
-  file.path(bronze_dir, "Coffe_sales.csv"),
-  file.path(bronze_dir, "Coffe_sales.xlsx")
+  file.path(bronze_dir, "coffee_sales.csv")
 )
 path_in <- cand[file.exists(cand)][1]
 if (is.na(path_in)) stop("Coloque o arquivo em data/01_bronze_layer/ (coffee_sales.csv ou Coffe_sales.csv)")
