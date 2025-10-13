@@ -10,7 +10,7 @@ p <- ggplot(monthly_sales, aes(month, revenue)) +
     labels = scales::label_number(prefix = "R$ ", scale_cut = scales::cut_short_scale())
     # ou: labels = scales::label_currency(prefix = "R$ ", big.mark = ".", decimal.mark = ",")
   ) +
-  labs(title = "Evolução mensal da receita", x = "Mês", y = "Receita") +
+  labs(x = "Mês", y = "Receita") +
   theme_minimal(base_size = 12)
 
 dir.create("reports", showWarnings = FALSE)
