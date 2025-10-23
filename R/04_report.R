@@ -30,7 +30,7 @@ df_to_table <- function(df, caption = NULL) {
 }
 
 # garante gráfico gerado (03_visualization.R)
-plot_file <- "monthly_sales.png"                                # <- nome do arquivo (sem 'reports/')
+plot_file <- "monthly_sales.png"
 plot_path_fs <- file.path(rep_dir, plot_file)                   # caminho no FS para validar existência
 plot_tag  <- if (file.exists(plot_path_fs)) {
   sprintf("<img src='%s' style='max-width:100%%;height:auto;border:1px solid #ddd;border-radius:6px'/>", plot_file)
