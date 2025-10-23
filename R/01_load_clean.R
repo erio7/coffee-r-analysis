@@ -4,32 +4,30 @@ library(readr)
 library(readxl)
 library(janitor)
 library(lubridate)
-library(future)
-library(furrr)
+library(data.table)
 library(tibble)
 
 # Caminhos
 bronze_dir <- "data/01_bronze_layer"
-
-# Procura um ou mais CSVs de coffee_sales (permite escalonar no futuro)
-files <- list.files(
-  path = bronze_dir,
-  pattern = "(?i)^coffee_sales.*\\.csv$",  # case-insensitive
-  full.names = TRUE
+cand <- c(
+  file.path(bronze_dir, "coffee_sales.csv")
 )
+path_in <- cand[file.exists(cand)][1]
+if (is.na(path_in)) stop("Coloque o arquivo em data/01_bronze_layer/ (coffee_sales.csv)")
 
-if (length(files) == 0) {
-  stop("Coloque ao menos um CSV em data/01_bronze_layer/ (ex.: coffee_sales.csv)")
+# Leitura (concorrente com fread)
+if (grepl("\\.csv$", path_in, ignore.case = TRUE)) {
+  data.table::setDTthreads(max(1L, parallel::detectCores() - 1L))
+  raw <- data.table::fread(
+    file         = path_in,
+    showProgress = interactive(),
+    nThread      = data.table::getDTthreads(),
+    encoding     = "UTF-8",
+    na.strings   = c("", "NA", "NaN", "null", "NULL")
+  ) |> tibble::as_tibble()
+} else {
+  raw <- readxl::read_excel(path_in)
 }
-
-# Leitura concorrente com future/furrr (multisession funciona no Windows/macOS/Linux)
-plan(multisession, workers = max(1L, parallel::detectCores() - 1L))
-
-read_one_csv <- function(p) {
-  readr::read_csv(p, show_col_types = FALSE, progress = interactive())
-}
-
-raw <- furrr::future_map_dfr(files, read_one_csv, .options = furrr::furrr_options(seed = TRUE))
 
 # Limpeza
 df <- raw |>
@@ -52,10 +50,8 @@ df <- raw |>
 
 # Reordena colunas
 df <- df |>
-  select(
-    date, product, revenue, qty, cash_type, time_of_day,
-    weekday, month_name, hour_of_day, everything()
-  )
+  select(date, product, revenue, qty, cash_type, time_of_day,
+         weekday, month_name, hour_of_day, everything())
 
 # Exporta para SILVER
 dir.create("data/02_silver_layer", showWarnings = FALSE, recursive = TRUE)
