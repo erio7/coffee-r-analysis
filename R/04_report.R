@@ -17,12 +17,7 @@ by_payment   <- read_csv(file.path(gold_dir, "by_payment.csv"), show_col_types =
 # helper: df -> <table> HTML
 df_to_table <- function(df, caption = NULL) {
   thead <- paste0("<tr>", paste(sprintf("<th>%s</th>", names(df)), collapse = ""), "</tr>")
-  # formata números com R$
-  fmt <- function(x) {
-    if (is.numeric(x)) {
-      number(x, big.mark = ".", decimal.mark = ",")
-    } else as.character(x)
-  }
+  fmt <- function(x) { if (is.numeric(x)) number(x, big.mark = ".", decimal.mark = ",") else as.character(x) }
   rows <- apply(df, 1, function(r) paste0("<tr>", paste(sprintf("<td>%s</td>", mapply(fmt, r)), collapse = ""), "</tr>"))
   tab <- paste0(
     "<table style='border-collapse:collapse;width:100%;margin:12px 0'>",
@@ -35,9 +30,10 @@ df_to_table <- function(df, caption = NULL) {
 }
 
 # garante gráfico gerado (03_visualization.R)
-plot_path <- file.path(rep_dir, "monthly_sales.png")
-plot_tag  <- if (file.exists(plot_path)) {
-  sprintf("<img src='%s' style='max-width:100%%;height:auto;border:1px solid #ddd;border-radius:6px'/>", plot_path)
+plot_file <- "monthly_sales.png"                                # <- nome do arquivo (sem 'reports/')
+plot_path_fs <- file.path(rep_dir, plot_file)                   # caminho no FS para validar existência
+plot_tag  <- if (file.exists(plot_path_fs)) {
+  sprintf("<img src='%s' style='max-width:100%%;height:auto;border:1px solid #ddd;border-radius:6px'/>", plot_file)
 } else {
   "<p style='color:#b00'>[Aviso] Rodar primeiro: source(\"R/03_visualization.R\") para gerar o gráfico.</p>"
 }
@@ -77,7 +73,7 @@ df_to_table(monthly |> mutate(revenue = paste0("R$ ", number(revenue, big.mark="
 df_to_table(top_products |> mutate(revenue = paste0("R$ ", number(revenue, big.mark=".", decimal.mark=",")))),
 "<h2>Receita por forma de pagamento</h2>",
 df_to_table(by_payment |> mutate(revenue = paste0("R$ ", number(revenue, big.mark=".", decimal.mark=",")))),
-"<hr/><div style='color:#888;font-size:12px'>Gerado automaticamente via R (sem RMarkdown/Pandoc).</div>",
+"<hr/><div style='color:#888;font-size:12px'></div>",
 "</body></html>",
 sep = "\n"
 )
