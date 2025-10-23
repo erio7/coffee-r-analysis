@@ -15,4 +15,4 @@ p <- ggplot(monthly_sales, aes(month, revenue)) +
 
 dir.create("reports", showWarnings = FALSE)
 ggsave("reports/monthly_sales.png", p, width = 10, height = 5, dpi = 150)
-message("✅ Gráfico salvo em reports/monthly_sales.png")
+message("Gráfico salvo em reports/monthly_sales.png")

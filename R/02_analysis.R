@@ -45,4 +45,4 @@ write_csv(tibble(
   kpi_total_revenue, kpi_total_tx, kpi_ticket_medio
 ), "data/03_gold_layer/kpis.csv")
 
-message("✅ GOLD gerado em data/03_gold_layer/")
+message("GOLD gerado em data/03_gold_layer/")
