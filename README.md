@@ -45,7 +45,7 @@ Este projeto tem como objetivo demonstrar um pipeline analítico completo em **R
 
 | Etapa | Script | Entrada | Saída | Descrição |
 |-------|---------|----------|-------|------------|
-| **1. Load & Clean** | `R/01_load_clean.R` | `data/01_bronze_layer/Coffe_sales.csv` | `data/02_silver_layer/coffee_sales_clean.csv` | Leitura, limpeza e padronização dos dados brutos. |
+| **1. Load & Clean** | `R/01_load_clean.R` | `data/01_bronze_layer/Coffe_sales.csv` | `data/02_silver_layer/coffee_sales_clean.csv` | Leitura concorrente (multithread), limpeza e padronização dos dados brutos. |
 | **2. Analysis** | `R/02_analysis.R` | Silver | Gold (`monthly_sales.csv`, `top_products.csv`, `by_payment.csv`, `kpis.csv`) | Cálculo de KPIs e agregações. |
 | **3. Visualization** | `R/03_visualization.R` | Gold | `reports/monthly_sales.png` | Criação do gráfico de receita mensal. |
 | **4. Report** | `R/04_report.R` | Gold + gráfico | `reports/coffee_sales_report.html` | Gera o relatório HTML final (sem depender de Pandoc). |
@@ -65,7 +65,7 @@ Este projeto tem como objetivo demonstrar um pipeline analítico completo em **R
    ```r
    install.packages(c(
      "tidyverse", "lubridate", "janitor", "readr", "readxl",
-     "ggplot2", "scales", "dplyr"
+     "ggplot2", "scales", "dplyr", "data.table", "tibble"
    ))
    ```
 
@@ -124,6 +124,30 @@ Esse gráfico também é incorporado no relatório HTML final, junto com as tabe
 
 ---
 
+## ⚡ Leitura Concorrente (Multithread)
+
+A leitura dos arquivos CSV no script `R/01_load_clean.R` agora é feita com **`data.table::fread()`**, que realiza **leitura concorrente** em múltiplos núcleos da CPU.
+
+```r
+if (grepl("\.csv$", path_in, ignore.case = TRUE)) {
+  data.table::setDTthreads(max(1L, parallel::detectCores() - 1L))
+  raw <- data.table::fread(
+    file         = path_in,
+    showProgress = interactive(),
+    nThread      = data.table::getDTthreads(),
+    encoding     = "UTF-8",
+    na.strings   = c("", "NA", "NaN", "null", "NULL")
+  ) |> tibble::as_tibble()
+} else {
+  raw <- readxl::read_excel(path_in)
+}
+```
+
+🔹 **Como funciona:**  
+O `fread()` divide o arquivo em blocos e processa cada parte em **threads paralelas**, tornando a leitura até **10x mais rápida** em CSVs grandes, aproveitando o hardware disponível.
+
+---
+
 ## 🧠 Notas Técnicas
 
 - Cada linha no dataset representa **1 transação**, com `qty = 1`.  
@@ -133,6 +157,7 @@ Esse gráfico também é incorporado no relatório HTML final, junto com as tabe
   - **Silver:** dados limpos e padronizados
   - **Gold:** dados prontos para análise e visualização
 - O relatório final (`04_report.R`) é gerado **sem dependência do Pandoc**, compatível com execução direta no VS Code.
+- A leitura de dados é **concorrente** via `data.table::fread()` - ideal para arquivos CSV grandes.
 
 ---
 
