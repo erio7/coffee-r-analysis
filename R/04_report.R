@@ -1,12 +1,12 @@
-# ---- 04_report_improved.R (gera HTML aprimorado) ----
+# ---- 04_report.R (gera HTML aprimorado) ----
 library(readr)
 library(dplyr)
 library(scales)
 
 # caminhos
-# O script R está em R/, então os caminhos são relativos à raiz do projeto (../)
-gold_dir <- "../data/03_gold_layer"
-rep_dir  <- "../reports"
+# O script R está sendo executado a partir da raiz do projeto, então os caminhos são relativos à raiz.
+gold_dir <- "data/03_gold_layer"
+rep_dir  <- "reports"
 if (!dir.exists(rep_dir)) dir.create(rep_dir, recursive = TRUE)
 
 # lê saídas do GOLD
@@ -18,7 +18,8 @@ by_payment   <- read_csv(file.path(gold_dir, "by_payment.csv"), show_col_types =
 
 # Função de formatação para valores monetários e numéricos
 fmt_currency <- function(x) paste0("R$ ", number(x, big.mark = ".", decimal.mark = ",", accuracy = 0.01))
-fmt_number <- function(x) format(x, big.mark = ".", scientific = FALSE)
+# Corrigido para usar number() do scales, eliminando o warning de formatação
+fmt_number <- function(x) number(x, big.mark = ".", decimal.mark = ",", accuracy = 1)
 
 # helper: df -> <table> HTML (Aprimorada para usar as classes CSS)
 df_to_table <- function(df, caption = NULL) {
@@ -96,7 +97,7 @@ html_content <- paste(
 )
 
 # Monta o HTML final, lendo o template do diretório R/
-html_template_path <- "index.html" # Agora está no mesmo diretório R/
+html_template_path <- "R/index.html" # O template HTML está em R/index.html
 html_template <- readLines(html_template_path)
 
 # Encontra a linha onde o conteúdo deve ser injetado (após a tag <div class="container">)
@@ -114,7 +115,7 @@ html_final <- c(
 # Monta o HTML final
 html <- paste(html_final, collapse = "\n")
 
-out_file <- file.path(rep_dir, "coffee_sales_report_improved.html")
+out_file <- file.path(rep_dir, "coffee_sales_report.html")
 writeLines(html, out_file, useBytes = TRUE)
 message("✅ Relatório aprimorado gerado em: ", normalizePath(out_file))
 # if (interactive()) utils::browseURL(out_file)
