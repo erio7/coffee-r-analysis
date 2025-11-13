@@ -43,10 +43,9 @@ theme_coffee <- function(base_size = 12, base_family = "Open Sans") {
 }
 
 # --- 2. Carregar Dados ---
-# O script está em R/, então o caminho é relativo à raiz do projeto
 monthly_sales <- readr::read_csv("data/03_gold_layer/monthly_sales.csv", show_col_types = FALSE)
 
-# --- 3. Gerar o Gráfico com o Novo Tema ---
+# --- 3. Gerar o Gráfico com o Tema ---
 p <- ggplot(monthly_sales, aes(x = month, y = revenue, group = 1)) + # group=1 para garantir a linha
   geom_line(color = "#A0522D", linewidth = 1.2) + # Cor da linha: Sienna
   geom_point(color = "#6F4E37", size = 3, fill = "#FFD700", shape = 21, stroke = 1) + # Cor do ponto: Marrom Escuro com contorno Dourado

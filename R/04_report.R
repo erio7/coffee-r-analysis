@@ -1,16 +1,14 @@
-# ---- 04_report.R (gera HTML aprimorado) ----
+# ---- 04_report.R -----
 library(readr)
 library(dplyr)
 library(scales)
 
 # caminhos
-# O script R está sendo executado a partir da raiz do projeto, então os caminhos são relativos à raiz.
 gold_dir <- "data/03_gold_layer"
 rep_dir  <- "reports"
 if (!dir.exists(rep_dir)) dir.create(rep_dir, recursive = TRUE)
 
 # lê saídas do GOLD
-# O usuário deve garantir que esses arquivos existam.
 kpis         <- read_csv(file.path(gold_dir, "kpis.csv"), show_col_types = FALSE)
 monthly      <- read_csv(file.path(gold_dir, "monthly_sales.csv"), show_col_types = FALSE)
 top_products <- read_csv(file.path(gold_dir, "top_products.csv"), show_col_types = FALSE)
@@ -18,10 +16,9 @@ by_payment   <- read_csv(file.path(gold_dir, "by_payment.csv"), show_col_types =
 
 # Função de formatação para valores monetários e numéricos
 fmt_currency <- function(x) paste0("R$ ", number(x, big.mark = ".", decimal.mark = ",", accuracy = 0.01))
-# Corrigido para usar number() do scales, eliminando o warning de formatação
 fmt_number <- function(x) number(x, big.mark = ".", decimal.mark = ",", accuracy = 1)
 
-# helper: df -> <table> HTML (Aprimorada para usar as classes CSS)
+
 df_to_table <- function(df, caption = NULL) {
   # Aplica formatação de moeda nas colunas que contêm "revenue"
   df_formatted <- df %>%
@@ -52,7 +49,7 @@ plot_tag  <- if (file.exists(plot_path_fs)) {
   "<p class='warning-message'>[Aviso] Rodar primeiro: source(\"R/03_visualization.R\") para gerar o gráfico.</p>"
 }
 
-# KPIs bonitinhos (Aprimorada para usar as classes CSS)
+# KPIs bonitinhos
 kpi_card <- function(label, value) {
   sprintf(
     "<div class='kpi-card'>
@@ -71,7 +68,7 @@ kpi_html <- paste0(
   "</div>"
 )
 
-# Conteúdo do HTML (separado para melhor legibilidade)
+# Conteúdo do HTML
 html_content <- paste(
   "<!-- Seção de KPIs -->",
   "<h2>Indicadores Chave de Performance (KPIs)</h2>",
@@ -97,7 +94,7 @@ html_content <- paste(
 )
 
 # Monta o HTML final, lendo o template do diretório R/
-html_template_path <- "R/index.html" # O template HTML está em R/index.html
+html_template_path <- "R/index.html"
 html_template <- readLines(html_template_path)
 
 # Encontra a linha onde o conteúdo deve ser injetado (após a tag <div class="container">)
