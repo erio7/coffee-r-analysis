@@ -1,84 +1,120 @@
-# ---- 04_report.R (gera HTML direto, sem rmarkdown/pandoc) ----
+# ---- 04_report_improved.R (gera HTML aprimorado) ----
 library(readr)
 library(dplyr)
 library(scales)
 
 # caminhos
-gold_dir <- "data/03_gold_layer"
-rep_dir  <- "reports"
+# O script R está em R/, então os caminhos são relativos à raiz do projeto (../)
+gold_dir <- "../data/03_gold_layer"
+rep_dir  <- "../reports"
 if (!dir.exists(rep_dir)) dir.create(rep_dir, recursive = TRUE)
 
 # lê saídas do GOLD
+# O usuário deve garantir que esses arquivos existam.
 kpis         <- read_csv(file.path(gold_dir, "kpis.csv"), show_col_types = FALSE)
 monthly      <- read_csv(file.path(gold_dir, "monthly_sales.csv"), show_col_types = FALSE)
 top_products <- read_csv(file.path(gold_dir, "top_products.csv"), show_col_types = FALSE)
 by_payment   <- read_csv(file.path(gold_dir, "by_payment.csv"), show_col_types = FALSE)
 
-# helper: df -> <table> HTML
+# Função de formatação para valores monetários e numéricos
+fmt_currency <- function(x) paste0("R$ ", number(x, big.mark = ".", decimal.mark = ",", accuracy = 0.01))
+fmt_number <- function(x) format(x, big.mark = ".", scientific = FALSE)
+
+# helper: df -> <table> HTML (Aprimorada para usar as classes CSS)
 df_to_table <- function(df, caption = NULL) {
-  thead <- paste0("<tr>", paste(sprintf("<th>%s</th>", names(df)), collapse = ""), "</tr>")
-  fmt <- function(x) { if (is.numeric(x)) number(x, big.mark = ".", decimal.mark = ",") else as.character(x) }
-  rows <- apply(df, 1, function(r) paste0("<tr>", paste(sprintf("<td>%s</td>", mapply(fmt, r)), collapse = ""), "</tr>"))
+  # Aplica formatação de moeda nas colunas que contêm "revenue"
+  df_formatted <- df %>%
+    mutate(across(contains("revenue"), fmt_currency)) %>%
+    mutate(across(contains("tx"), fmt_number)) # Aplica formatação de número em colunas com "tx"
+
+  thead <- paste0("<tr>", paste(sprintf("<th>%s</th>", names(df_formatted)), collapse = ""), "</tr>")
+  
+  rows <- apply(df_formatted, 1, function(r) paste0("<tr>", paste(sprintf("<td>%s</td>", r), collapse = ""), "</tr>"))
+  
   tab <- paste0(
-    "<table style='border-collapse:collapse;width:100%;margin:12px 0'>",
-    if (!is.null(caption)) sprintf("<caption style='text-align:left;font-weight:600;margin-bottom:6px'>%s</caption>", caption) else "",
-    "<thead style='background:#f4f4f4'>", thead, "</thead>",
+    "<table class='data-table'>",
+    if (!is.null(caption)) sprintf("<caption>%s</caption>", caption) else "",
+    "<thead>", thead, "</thead>",
     "<tbody>", paste(rows, collapse = ""), "</tbody>",
     "</table>"
   )
-  gsub("<(th|td)>", "<\\1 style='border:1px solid #ddd;padding:6px'>", tab)
+  return(tab)
 }
 
 # garante gráfico gerado (03_visualization.R)
 plot_file <- "monthly_sales.png"
 plot_path_fs <- file.path(rep_dir, plot_file)                   # caminho no FS para validar existência
 plot_tag  <- if (file.exists(plot_path_fs)) {
-  sprintf("<img src='%s' style='max-width:100%%;height:auto;border:1px solid #ddd;border-radius:6px'/>", plot_file)
+  # O caminho da imagem no HTML deve ser relativo ao arquivo HTML de saída (reports/)
+  sprintf("<img src='%s' alt='Gráfico de Evolução Mensal da Receita'/>", plot_file)
 } else {
-  "<p style='color:#b00'>[Aviso] Rodar primeiro: source(\"R/03_visualization.R\") para gerar o gráfico.</p>"
+  "<p class='warning-message'>[Aviso] Rodar primeiro: source(\"R/03_visualization.R\") para gerar o gráfico.</p>"
 }
 
-# KPIs bonitinhos
+# KPIs bonitinhos (Aprimorada para usar as classes CSS)
 kpi_card <- function(label, value) {
   sprintf(
-    "<div style='flex:1;padding:14px;border:1px solid #ddd;border-radius:10px;margin-right:10px'>
-       <div style='font-size:12px;color:#666'>%s</div>
-       <div style='font-size:20px;font-weight:700'>%s</div>
+    "<div class='kpi-card'>
+       <div class='kpi-label'>%s</div>
+       <div class='kpi-value'>%s</div>
      </div>",
     label, value
   )
 }
+
 kpi_html <- paste0(
-  "<div style='display:flex;gap:10px;margin:10px 0'>",
-  kpi_card("Receita total", paste0("R$ ", number(kpis$kpi_total_revenue, big.mark=".", decimal.mark=","))),
-  kpi_card("Transações", format(kpis$kpi_total_tx, big.mark=".")),
-  kpi_card("Ticket médio", paste0("R$ ", number(kpis$kpi_ticket_medio, big.mark=".", decimal.mark=","))),
+  "<div class='kpi-container'>",
+  kpi_card("Receita total", fmt_currency(kpis$kpi_total_revenue)),
+  kpi_card("Transações", fmt_number(kpis$kpi_total_tx)),
+  kpi_card("Ticket médio", fmt_currency(kpis$kpi_ticket_medio)),
   "</div>"
 )
 
-# monta HTML
-html <- paste(
-"<!DOCTYPE html>",
-"<html lang='pt-br'><head><meta charset='utf-8'/>",
-"<title>Análise de Vendas de Café</title>",
-"<style>body{font-family:Segoe UI, Arial;max-width:980px;margin:32px auto;padding:0 16px;color:#222} h1,h2{margin:12px 0}</style>",
-"</head><body>",
-"<h1>Análise de Vendas de Café</h1>",
-kpi_html,
-"<h2>Evolução mensal da receita</h2>",
-plot_tag,
-df_to_table(monthly |> mutate(revenue = paste0("R$ ", number(revenue, big.mark=".", decimal.mark=","))),
-            "Receita mensal (tabela)"),
-"<h2>Top 5 produtos por receita</h2>",
-df_to_table(top_products |> mutate(revenue = paste0("R$ ", number(revenue, big.mark=".", decimal.mark=",")))),
-"<h2>Receita por forma de pagamento</h2>",
-df_to_table(by_payment |> mutate(revenue = paste0("R$ ", number(revenue, big.mark=".", decimal.mark=",")))),
-"<hr/><div style='color:#888;font-size:12px'></div>",
-"</body></html>",
-sep = "\n"
+# Conteúdo do HTML (separado para melhor legibilidade)
+html_content <- paste(
+  "<!-- Seção de KPIs -->",
+  "<h2>Indicadores Chave de Performance (KPIs)</h2>",
+  kpi_html,
+  
+  "<!-- Seção de Gráfico -->",
+  "<h2>Evolução Mensal da Receita</h2>",
+  "<div class='chart-section'>",
+  plot_tag,
+  "</div>",
+  
+  "<!-- Seção de Tabelas -->",
+  "<h2>Receita Mensal (Tabela)</h2>",
+  df_to_table(monthly, "Receita mensal detalhada"),
+  
+  "<h2>Top 5 Produtos por Receita</h2>",
+  df_to_table(top_products),
+  
+  "<h2>Receita por Forma de Pagamento</h2>",
+  df_to_table(by_payment),
+  
+  sep = "\n"
 )
 
-out_file <- file.path(rep_dir, "coffee_sales_report.html")
+# Monta o HTML final, lendo o template do diretório R/
+html_template_path <- "index.html" # Agora está no mesmo diretório R/
+html_template <- readLines(html_template_path)
+
+# Encontra a linha onde o conteúdo deve ser injetado (após a tag <div class="container">)
+container_start_line <- grep("<div class=\"container\">", html_template)
+# Encontra a linha onde o conteúdo deve ser injetado (antes da tag </div> que fecha o container)
+container_end_line <- grep("</footer>", html_template) - 1
+
+# Injeta o conteúdo gerado pelo R dentro do container
+html_final <- c(
+  html_template[1:container_start_line],
+  html_content,
+  html_template[container_end_line:length(html_template)]
+)
+
+# Monta o HTML final
+html <- paste(html_final, collapse = "\n")
+
+out_file <- file.path(rep_dir, "coffee_sales_report_improved.html")
 writeLines(html, out_file, useBytes = TRUE)
-message("✅ Relatório gerado em: ", normalizePath(out_file))
-if (interactive()) utils::browseURL(out_file)
+message("✅ Relatório aprimorado gerado em: ", normalizePath(out_file))
+# if (interactive()) utils::browseURL(out_file)

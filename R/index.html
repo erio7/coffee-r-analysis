@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8"/>
+    <title>Análise de Vendas de Café - Relatório</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700&family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Variáveis de Cor e Tipografia */
+        :root {
+            --color-primary: #6F4E37; /* Marrom Café Escuro */
+            --color-secondary: #A0522D; /* Sienna, Marrom Médio */
+            --color-accent: #FFD700; /* Dourado, para destaque */
+            --color-background: #F5F5DC; /* Bege Claro (Creme) */
+            --color-text-dark: #2C2C2C;
+            --color-text-light: #FFFFFF;
+            --font-serif: 'Merriweather', serif;
+            --font-sans: 'Open Sans', sans-serif;
+        }
+
+        /* Reset Básico e Estilos Globais */
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--color-background);
+            color: var(--color-text-dark);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* Cabeçalho */
+        header {
+            background-color: var(--color-primary);
+            color: var(--color-text-light);
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        header h1 {
+            font-family: var(--font-serif);
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        /* Tipografia */
+        h2 {
+            font-family: var(--font-serif);
+            color: var(--color-secondary);
+            border-bottom: 2px solid var(--color-secondary);
+            padding-bottom: 5px;
+            margin-top: 30px;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        /* Cards de KPIs */
+        .kpi-container {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .kpi-card {
+            flex: 1;
+            min-width: 250px;
+            background-color: var(--color-text-light);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid var(--color-primary);
+        }
+
+        .kpi-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .kpi-label {
+            font-size: 0.9em;
+            color: #6A6A6A;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .kpi-value {
+            font-family: var(--font-serif);
+            font-size: 2.2em;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+
+        /* Imagem/Gráfico */
+        .chart-section {
+            margin-bottom: 40px;
+            padding: 20px;
+            background-color: var(--color-text-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+
+        .chart-section img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 8px;
+            border: 1px solid #E0E0E0;
+        }
+
+        /* Tabelas */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 20px 0 40px 0;
+            background-color: var(--color-text-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        caption {
+            text-align: left;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            color: var(--color-secondary);
+            padding: 0 10px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #EAEAEA;
+        }
+
+        thead th {
+            background-color: var(--color-secondary);
+            color: var(--color-text-light);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: #F9F9F9;
+        }
+
+        tbody tr:hover {
+            background-color: #F0E68C; /* Khaki, toque de café */
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 40px;
+            border-top: 1px solid #D0D0D0;
+            color: #888;
+            font-size: 0.9em;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .kpi-container {
+                flex-direction: column;
+            }
+
+            .kpi-card {
+                min-width: 100%;
+            }
+
+            header h1 {
+                font-size: 2em;
+            }
+
+            h2 {
+                font-size: 1.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Análise de Vendas de Café</h1>
+    </header>
+
+    <div class="container">
+        <!-- Seção de KPIs -->
+        <h2>Indicadores Chave de Performance (KPIs)</h2>
+        <div class="kpi-container">
+            <!-- Os KPIs serão injetados aqui pelo script R -->
+            <!-- Exemplo de Estrutura de KPI Card: -->
+            <!--
+            <div class="kpi-card">
+                <div class="kpi-label">Receita total</div>
+                <div class="kpi-value">R$ 1.234.567,89</div>
+            </div>
+            -->
+        </div>
+
+        <!-- Seção de Gráfico -->
+        <h2>Evolução Mensal da Receita</h2>
+        <div class="chart-section">
+            <!-- O gráfico será injetado aqui pelo script R -->
+            <!-- Exemplo de Estrutura de Imagem: -->
+            <!--
+            <img src="monthly_sales.png" alt="Gráfico de Evolução Mensal da Receita">
+            -->
+        </div>
+
+        <!-- Seção de Tabelas -->
+        <h2>Receita Mensal (Tabela)</h2>
+        <!-- A tabela será injetada aqui pelo script R -->
+
+        <h2>Top 5 Produtos por Receita</h2>
+        <!-- A tabela será injetada aqui pelo script R -->
+
+        <h2>Receita por Forma de Pagamento</h2>
+        <!-- A tabela será injetada aqui pelo script R -->
+    </div>
+
+    <footer>
+        Relatório de Análise de Dados de Café &bull; Gerado em <span id="data-geracao"></span>
+    </footer>
+
+    <script>
+        document.getElementById('data-geracao').textContent = new Date().toLocaleDateString('pt-BR', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>
