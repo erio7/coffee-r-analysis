@@ -180,7 +180,5 @@ reports/*.png
 
 ---
 
-## 📄 Licença
-
 Uso interno e educacional.  
-© 2025 Coffee Sales Analysis — Desenvolvido em R por Eric Amorim e Mateus Stangherlin
+Desenvolvido em R por Eric Amorim e Mateus Stangherlin
