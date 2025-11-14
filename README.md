@@ -19,6 +19,7 @@ coffee-r-analysis/
 │   ├── 02_analysis.R          # SILVER - GOLD
 │   ├── 03_visualization.R     # GOLD - Gráficos
 │   └── 04_report.R            # GOLD - Relatório HTML
+│   └── index.html             # Template HTML
 │
 ├── reports/               # Gráficos e relatório final
 │   ├── monthly_sales.png
