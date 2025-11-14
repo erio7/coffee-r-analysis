@@ -1,4 +1,4 @@
-# ☕ Coffee Sales Analysis – R Pipeline
+# ☕ Coffee Sales Analysis - R Pipeline
 
 > Projeto de análise de vendas de café com **R**, estruturado em camadas de dados (**Bronze - Silver - Gold**) e com geração automática de relatórios e gráficos.
 
